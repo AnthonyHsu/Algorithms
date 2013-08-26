@@ -1,0 +1,374 @@
+%\title{Assignment 01 of Graduate Algorithms}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%-----------------------------------------------------------------------------
+% PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%-----------------------------------------------------------------------------
+
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm,amssymb} % Math packages
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+
+\usepackage{sectsty} % Allows customizing section commands
+\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
+
+%--------------------
+% Quote Style
+%--------------------
+
+\usepackage{tikz}
+\usetikzlibrary{backgrounds}
+\makeatletter
+
+\tikzset{%
+  fancy quotes/.style={
+    text width=\fq@width pt,
+    align=justify,
+    inner sep=.2em,
+    anchor=north west,
+    minimum width=\textwidth,
+  },
+  fancy quotes width/.initial={.8\textwidth},
+  fancy quotes marks/.style={
+    scale=2,
+    text=white,
+    inner sep=0pt,
+  },
+  fancy quotes opening/.style={
+    fancy quotes marks,
+  },
+  fancy quotes closing/.style={
+    fancy quotes marks,
+  },
+  fancy quotes background/.style={
+    show background rectangle,
+    inner frame xsep=0pt,
+    background rectangle/.style={
+      fill=gray!25,
+      rounded corners,
+    },
+  }
+}
+
+\newenvironment{fancyquotes}[1][]{%
+\noindent
+\tikzpicture[fancy quotes background]
+\node[fancy quotes opening,anchor=north west] (fq@ul) at (0,0) {$``$};
+\tikz@scan@one@point\pgfutil@firstofone(fq@ul.east)
+\pgfmathsetmacro{\fq@width}{\textwidth - 2*\pgf@x}
+\node[fancy quotes,#1] (fq@txt) at (fq@ul.north west) \bgroup}
+{\egroup;
+\node[overlay,fancy quotes closing,anchor=east] at (fq@txt.south east) {''};
+\endtikzpicture}
+
+\makeatother
+
+
+%--------------------
+% Header and Footer
+%--------------------
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead[L]{\normalfont \normalsize \textsc{CS673: Graduate Algorithms}} % Class
+\fancyhead[R]{\normalfont \normalsize \textsc{Wanzhang Sheng}} % Author
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+% \setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+%-----------------------------------------------------------------------------
+% TITLE SECTION
+%-----------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Assignment 01 \\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Wanzhang Sheng} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+
+\maketitle % Print the title
+
+%-----------------------------------------------------------------------------
+% PROBLEM 1
+%-----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+(8 points) Give a $\Theta (n)$ algorithm that takes as input a sorted list of n integers $L$ and an integer $t$, and determines if there are two elements of $L$ whose sum is exactly $t$. You should give both an English description of how your algorithm works and pseudocode.
+\end{fancyquotes}
+
+Basicly, we need to try every possible pair to determine if their sum is $t$.
+The target answer space is a set of pair $\{(a, b):a < b \wedge a,b\in L\}$.
+If we check every pair, the algorithm should be $\Theta (n^2)$.
+However, as a sorted list, some of the pairs could skip so that the algorithm could be $\Theta (n)$.
+
+First, we enumerate every $a$ in upper direction.
+Considering currently we pick up $a_1$, and we can search for $t-a_1$ in lower direction.
+If it doesn't exist, then we can find $b_1$ which is the first $b$ smaller then $t-a_1$.
+Then we can pick up next $a$ as $a_2$, for searching if $t-a_2$ is in the list $L$.
+Appearently, $a_1 \leq a_2$, so $t-a_1 \geq t-a_2$.
+Which means all $b \in \{b:b \geq b_1 and b \in L\}$ don't have to determine again.
+When the search of $a$ meet the search of $b$ and still not found the pair, it means the list $L$ doesn't have such a pair.
+
+Pseudocode as following:
+
+\begin{algorithm}[H]
+  $b_1$ = \emph{the last index of} $L$\;
+  \For{$a_1$ = \emph{the first index of} $L$; $a_1<b_1$; $a_1=a_1+1$}{
+    \While{$L[b_1]>t-L[a_1]$}{
+      $b_1 = b_1 - 1$\;
+    }
+    \If{$L[b_1] = t - L[a_1]$}{
+      Function returns true and one possible pair is $(L[a_1], L[b_1])$\;
+    }
+  }
+  Function returns false, which means no such of pair\;
+  \caption{Determine the existance of the certain pair.}
+\end{algorithm}
+
+
+
+%-----------------------------------------------------------------------------
+% PROBLEM 2
+%-----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+(2 points) Exercise 2.3-5 Which is asymptotically larger, $\lg^*(\lg(n))$ or $\lg(\lg^*(n))$? Explain!
+\end{fancyquotes}
+
+The defination of $\lg^*$ is as following:
+
+\begin{displaymath}
+  \lg^*(n) = \left\{
+  \begin{array}{lr}
+  0 & : n\leq 1\\
+  1+\lg^*(\lg(n)) & : n>1
+  \end{array}
+  \right.
+\end{displaymath}
+
+So, for $n>1$, we have:
+
+$$\lg^*(\lg(n)) = \lg^*(n)-1$$
+
+We need to determine the relation between $\lg^*(\lg(n))$ and $\lg(\lg^*(n))$, which means:
+
+$$\lg^*(n)-1 \stackrel{?}{=} \lg(\lg^*(n))$$
+
+Let $k=\lg^*(n)$, so:
+
+$$k-1 \stackrel{?}{=} \lg(k)$$
+
+Apperently, when $n$ gets larger, the $k$ gets larger. And $k-1 \in \Theta(n)$ and $\lg(k)\in\Theta(\lg(n))$, so asymptotically we have:
+
+\begin{align}
+\begin{split}
+k-1 &> \lg(k)\\
+\lg^*(n)-1 &> \lg(\lg^*(n))\\
+\lg^*(\lg(n)) &> \lg(\lg^*(n))
+\end{split}
+\end{align}
+
+Which means $\lg^*(\lg n)$ is asymptotically larger than $\lg(\lg^*(n))$.
+
+%-----------------------------------------------------------------------------
+% PROBLEM 3
+%-----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+Use the substitution method to prove that the recurrene relation
+$T(n) = 16T(\lceil n/4\rceil)+cn$ is in $\Theta (n^2)$, as follows:
+
+\begin{enumerate}
+  \item (2 points) First, use the substitution method to show that $T(n)>cn^2$
+  \item (2 points) Next, show that a substitution proof that $T(n)<cn^2$ fails
+  \item (2 points) Next, show how to subtract off a lower-order term to make the substitution work.
+\end{enumerate}
+
+You can assume that $T(0) = T(1) = C$
+\end{fancyquotes}
+
+\subsection{}
+For every $n\geq 2$, we have $T(k)>ck^2$, $k<n$, then:
+\begin{align}
+\begin{split}
+T(n) &\geq 16(c\lfloor n/4\rfloor^2)+cn\\
+&\geq c(16(\frac{n-3}{4})^2+n)\\
+&= c(n^2-5n+9)\\
+&\geq cn^2
+\end{split}
+\end{align}
+So, $T(n) \in \Omega(n)$
+
+\subsection{}
+Then, try another direction:
+\begin{align}
+\begin{split}
+T(n) &\leq 16(c\lfloor n/4\rfloor^2)+cn\\
+&\leq c(16(\frac{n}{4})^2+n)\\
+&= c(n^2+n)\\
+&\nleq cn^2
+\end{split}
+\end{align}
+Failed.
+
+\subsection{}
+Assume, for every $n\geq 2$, we have $T(k)>ck^2-c_0k$, $k<n,c_0\geq \frac{c}{16}$
+\begin{align}
+\begin{split}
+T(n) &\leq 16(c\lfloor n/4\rfloor^2-c_0n)+cn\\
+&\leq 16(c(\frac{n}{4})^2-c_0n)+cn\\
+&= cn^2-16c_0n+cn\\
+&\leq cn^2
+\end{split}
+\end{align}
+So, $T(n)\in O(n^2)$. Since $T(n)\in \Omega(n^2)$, $T(n)\in \Theta(n^2)$.
+
+%-----------------------------------------------------------------------------
+% PROBLEM 4
+%-----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+Prove the following bounds using the substitution method.
+Recall that to prove $T(n) \in \Theta(f(n))$,
+you must show that $T(n) \in O(f(n))$ and $T(n) \in \Omega(f(n))$.
+You can assume that $T(0) = T(1) = C$
+
+\begin{enumerate}
+  \item (4 points) $T(n) = T(n-3) + n \in \Omega(n^2)$
+  \item (4 points) $T(n) = T(n/3) + 1 \in \Omega(\lg n)$
+  \item (4 points) $T(n) = T(n/3) + n \in \Omega(n)$
+\end{enumerate}
+\end{fancyquotes}
+
+\subsection{}
+Assume that, for every $n\geq 2$, we have $T(k)\geq ck^2+c_0k$, $k<n$.
+\begin{align}
+\begin{split}
+T(n) &= T(n-3)+n\\
+&\geq c(n-3)^2+c_0(n-3)+n\\
+&= cn^2-6cn+9c+c_0n-3c_0+n\\
+&= cn^2+c_0n+((1-6c)n+(9c-3c_0))
+\end{split}
+\end{align}
+When $1-6c=0$ and $9c-c_0\geq 0$, which means $c=\frac{1}{6}$ and $c_0\leq\frac{1}{2}$, $T(n)\geq cn^2+c_0n$.
+So, $T(n)\in\Omega(n^2)$.
+
+Then, assume that, for every $n\geq 2$, we have $T(k)\leq ck^2+c_0k$, $k<n$.
+\begin{align}
+\begin{split}
+T(n) &= T(n-3)+n\\
+&\leq c(n-3)^2+c_0(n-3)+n\\
+&= cn^2-6cn+9c+c_0n-3c_0+n\\
+&= cn^2+c_0n+((1-6c)n+(9c-3c_0))
+\end{split}
+\end{align}
+When $1-6c=0$ and $9c-c_0\leq 0$, which means $c=\frac{1}{6}$ and $c_0\geq\frac{1}{2}$, $T(n)\leq cn^2+c_0n$.
+So, $T(n)\in O(n^2)$.
+Since $T(n)\in\Omega(n^2)$, $T(n)\in\Theta(n^2)$.
+% subsection n^2 (end)
+
+\subsection{}
+
+Assume that, for every $n\geq 2$, we have $T(k)\geq c\lg(k)$, $k<n$.
+
+\begin{align}
+\begin{split}
+T(n) &= T(\frac{n}{3})+1\\
+&\geq c\lg(\frac{n}{3})+1\\
+&= c\lg(n)-c\lg(3)+1\\
+\end{split}
+\end{align}
+
+When $1-c\lg(3)\geq 0$, which means $c\leq\frac{1}{\lg(3)}$, $T(n)\geq c\lg(n)$.
+So, $T(n)\in\Omega(\lg(n))$.
+
+Then, assume that, for every $n\geq 2$, we have $T(k)\leq c\lg(k)$, $k<n$.
+
+\begin{align}
+\begin{split}
+T(n) &= T(\frac{n}{3})+1\\
+&\leq c\lg(\frac{n}{3})+1\\
+&= c\lg(n)-c\lg(3)+1\\
+\end{split}
+\end{align}
+
+When $1-c\lg(3)\leq 0$, which means $c\geq\frac{1}{\lg(3)}$, $T(n)\leq c\lg(n)$.
+So, $T(n)\in O(\lg(n))$.
+Since $T(n)\in\Omega(\lg(n))$, $T(n)\in\Theta(\lg(n))$.
+
+% subsection lg_n (end)
+
+\subsection{}
+
+Assume that, for every $n\geq 2$, we have $T(k)\geq ck$, $k<n$.
+
+\begin{align}
+\begin{split}
+T(n) &= T(\frac{n}{3})+n\\
+&\geq \frac{cn}{3}+n
+\end{split}
+\end{align}
+
+When $\frac{cn}{3}+n\geq cn$, which means $c\leq\frac{3}{2}$, $T(n)\geq cn$.
+So, $T(n)\in\Omega(n)$.
+
+Then, assume that, for every $n\geq 2$, we have $T(k)\leq ck$, $k<n$.
+
+\begin{align}
+\begin{split}
+T(n) &= T(\frac{n}{3})+n\\
+&\leq \frac{cn}{3}+n
+\end{split}
+\end{align}
+
+When $\frac{cn}{3}+n\geq cn$, which means $c\geq\frac{3}{2}$, $T(n)\leq cn$.
+So, $T(n)\in O(n)$.
+Since $T(n)\in\Omega(n)$, $T(n)\in\Theta(n)$.
+
+% subsection n (end)
+
+%-----------------------------------------------------------------------------
+
+\end{document}
