@@ -299,10 +299,31 @@ $$T(n) = T(2^m) = S(m) \in\Theta(m^{\lg3}) = \Theta(\lg^{\lg3}n)$$
 \section{}
 
 \begin{fancyquotes}
-  Problem 4-2 (12 points) Parameter Passing Costs This is problem 4-3 in the first
-  edition and second editions.
+  Problem $4-2$ (12 points) Parameter Passing Costs.
+  This is problem $4-3$ in the first edition and second editions.
 \end{fancyquotes}
 
-{\Huge TODO}
+\begin{enumerate}
+\item For binary search algorithm, the worst case is found the
+  target when the search range shrinked to size one.
+  The recurrences are $f(1,N), f(1,N/2), f(1,N/4), f(1,N/8), f(1,N/16) \cdots$.
+  And the time cost at the worst case is $O(\lg(N))$.
+  \begin{enumerate}
+  \item When array is passed by pointer, the upper bound is $O(\lg(N))$.
+  \item When array is passed by copying, the upper bound is
+    $N+\frac{N}{2}+\frac{N}{4}+\frac{N}{8}+\cdots+1 = O(N)$.
+  \item When array is passed by subarray, the upper bound is same $O(N)$.
+  \end{enumerate}
+\item For Merge-Sort algorithm, the recurrences of the worst case are
+  $f(1,N)=f(1,N/2)+f(N/2+1,N)=f(1,N/4)+f(N/4+1,N/2)+f(N/2+1,3N/4)+f(3N/4+1,N)\cdots$.
+  And the time cost at the worst case is $\Theta(N\lg(N))$.
+  \begin{enumerate}
+  \item When array is passed by pointer, the upper bound is $1+2+2^2+2^3\cdots+N=O(N)$.
+  \item When array is passed by copying, the upper bound is
+    $N+2N+4N+8N+\cdots+N^2 = O(N^2)$.
+  \item When array is passed by subarray, the upper bound is same
+    $N+2\frac{N}{2}+4\frac{N}{4}+8\frac{N}{8}+\cdots+N = O(N\lg(N))$.
+  \end{enumerate}
+\end{enumerate}
 
 \end{document}
