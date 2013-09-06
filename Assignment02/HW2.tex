@@ -1,4 +1,4 @@
-%\title{Assignment 02 of Graduate Algorithms}
+% \title{Assignment 02 of Graduate Algorithms}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Short Sectioned Assignment
@@ -16,9 +16,9 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 
 \documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
 
@@ -31,9 +31,9 @@
 \usepackage{sectsty} % Allows customizing section commands
 \allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
 
-%--------------------
+% --------------------
 % Quote Style
-%--------------------
+% --------------------
 
 \usepackage{tikz}
 \usetikzlibrary{backgrounds}
@@ -70,22 +70,22 @@
 }
 
 \newenvironment{fancyquotes}[1][]{%
-\noindent
-\tikzpicture[fancy quotes background]
-\node[fancy quotes opening,anchor=north west] (fq@ul) at (0,0) {$``$};
-\tikz@scan@one@point\pgfutil@firstofone(fq@ul.east)
-\pgfmathsetmacro{\fq@width}{\textwidth - 2*\pgf@x}
-\node[fancy quotes,#1] (fq@txt) at (fq@ul.north west) \bgroup}
+  \noindent
+  \tikzpicture[fancy quotes background]
+  \node[fancy quotes opening,anchor=north west] (fq@ul) at (0,0) {$``$};
+  \tikz@scan@one@point\pgfutil@firstofone(fq@ul.east)
+  \pgfmathsetmacro{\fq@width}{\textwidth - 2*\pgf@x}
+  \node[fancy quotes,#1] (fq@txt) at (fq@ul.north west) \bgroup}
 {\egroup;
-\node[overlay,fancy quotes closing,anchor=east] at (fq@txt.south east) {''};
-\endtikzpicture}
+  \node[overlay,fancy quotes closing,anchor=east] at (fq@txt.south east) {''};
+  \endtikzpicture}
 
 \makeatother
 
 
-%--------------------
+% --------------------
 % Header and Footer
-%--------------------
+% --------------------
 
 \usepackage{fancyhdr} % Custom headers and footers
 \pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
@@ -106,16 +106,16 @@
 \setlength{\parskip}{\baselineskip}%
 \setlength{\parindent}{0pt}%
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % TITLE SECTION
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
 
 \title{
-\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
-\huge Assignment 02 \\ % The assignment title
-\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+  \horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+  \huge Assignment 02 \\ % The assignment title
+  \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
 \author{Wanzhang Sheng} % Your name
@@ -126,9 +126,9 @@
 
 \maketitle % Print the title
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % PROBLEM 1
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 \section{}
 
 \begin{fancyquotes}
@@ -140,11 +140,11 @@
 
 \begin{align}
   \begin{split}
-    T(n) =& T(n-a)+T(a)+Cn\\
-    =& T(n-2a)+T(a)+Cn\\
-    =& T(n-3a)+T(a)+Cn\\
+    T(n) =& T(a)+Cn\\
+    +& T(a)+Cn\\
+    +& T(a)+Cn\\
     & \vdots\\
-    =& T(a_1)+T(a)+Cn
+    +& T(a_1)+T(a)+Cn
   \end{split}
 \end{align}
 
@@ -152,9 +152,9 @@ So since $T(a)\in \Theta(1)$, we have:
 $$T(n)=(\lfloor\frac{n}{a}\rfloor + 1)\times (T(a)+Cn) \in \Theta(n^2)$$
 
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % PROBLEM 2
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 \section{}
 
 \begin{fancyquotes}
@@ -168,21 +168,21 @@ $$T(n)=(\lfloor\frac{n}{a}\rfloor + 1)\times (T(a)+Cn) \in \Theta(n^2)$$
     T(n) =& Cn\\
     +& C(\alpha n) + C(1-\alpha)n\\
     +& C(\alpha^2 n) + C\alpha(1-\alpha)n + C(1-\alpha)\alpha n + C(1-\alpha)^2n\\
-    +& \,\,\vdots\\
+    & \vdots\\
     +& \sum_{i=1}^{2^{k-1}}{C\alpha^{2^k-i+1}(1-\alpha)^{i-1}n}\\
   \end{split}
 \end{align}
 
 The $k$ level of recursion tree has $Cn$.
-And the depth of the recursion tree is between $\log_{\alpha}{n}$ and $\log_{1-\alpha}{n}$.
+And the depth of the recursion tree is between $-\log_{\alpha}{n}$ and $-\log_{1-\alpha}{n}$.
 So we have $T(n)$ is between $-\log_{\alpha}n\times Cn$ and
 $-\log_{1-\alpha}n\times Cn$.
-So $T(n)\in\Theta(n\log n)$.
+So $T(n)\in\Theta(n\lg n)$.
 
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % PROBLEM 3
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 \section{}
 
 \begin{fancyquotes}
@@ -202,19 +202,22 @@ So, by changing back from $S(m)$ to $T(n)$, we obtain:
 $$T(n) = T(2^m) = S(m) \in\Theta(m^{\lg3}) = \Theta(\lg^{\lg3}n)$$
 
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % PROBLEM 4
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 \section{}
 
 \begin{fancyquotes}
-  (4 points) Give find a tight ($\Omega$) bound for each of the following recurrence relations.
+  (4 points) Give find a tight ($\Theta$) bound for each of the following recurrence relations.
   Assume that $T(n)$ is a constant for suffciently small $n$.
   Prove your solution is correct using either the master method or the substitution method.
 \end{fancyquotes}
 
 \begin{enumerate}
-\item(4 points) $T(n) = T(n/2) + T(n/4) + n$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = T(n/2) + T(n/4) + n$
+  \end{fancyquotes}
 
   Assume $T(n)\in\Theta(n)$.
   So we have $C_1n \leq T(n)\leq C_2n$.
@@ -231,7 +234,10 @@ $$T(n) = T(2^m) = S(m) \in\Theta(m^{\lg3}) = \Theta(\lg^{\lg3}n)$$
   When $C_1\leq 4$ and $C_2\geq 4$, we have $C_1n\leq T(n)\leq C_2n$.
   So $T(n)\in\Theta(n)$.
 
-\item(4 points) $T(n) = T(n/2) + T(n/4) + T(n/4) + n$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = T(n/2) + T(n/4) + T(n/4) + n$
+  \end{fancyquotes}
 
   Assume $T(n)\in\Theta(n\lg{n})$.
   So we have $C_1n\lg{n}\leq T(n)\leq C_2n\lg{n}$.
@@ -249,29 +255,44 @@ $$T(n) = T(2^m) = S(m) \in\Theta(m^{\lg3}) = \Theta(\lg^{\lg3}n)$$
   When $C_1\leq 2/3$ and $C_2\geq 2/3$, we have $C_1n\lg{n}\leq T(n)\leq C_2n\lg{n}$.
   So $T(n)\in\Theta(n\lg{n})$.
 
-\item(4 points) $T(n) = 2T(n/2) + \lg{n}$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = 2T(n/2) + \lg{n}$
+  \end{fancyquotes}
 
   Since $\lg{n}\in O(n^{\log_b{a}-\epsilon})=O(n^{\log_2{2}-\epsilon})<O(n)$,
   by Master Method first type, we have: $T(n)\in \Theta(n)$
 
-\item(4 points) $T(n) = 4T(n/4) + n$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = 4T(n/4) + n$
+  \end{fancyquotes}
 
   Since $n\in \Theta(n^{\log_b{a}})=\Theta(n^{\log_4{4}})=\Theta(n)$,
   by Master Method second type, we have:
   $T(n)\in \Theta(n^{\log_b{a}}\times \lg{n}=\Theta(n\lg{n}))$
 
-\item(4 points) $T(n) = 3T(n/3) + n\lg{n}$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = 3T(n/3) + n\lg{n}$
+  \end{fancyquotes}
 
   Since $n\lg{n}\in \Omega(n^{\log_b{a}>\epsilon})=\Omega(n^{\log_3{3}>\epsilon})>\Omega(n)$,
   and $3n/3\lg{n/3}\leq Cn\lg{n}$,
   by Master Method third type, we have: $T(n)\in \Theta(n\lg{n})$
 
-\item(4 points) $T(n) = 3T(n/9) + \sqrt{n}$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = 3T(n/9) + \sqrt{n}$
+  \end{fancyquotes}
 
   Since $\sqrt{n}\in \Theta(n^{\log_b{a}})=\Theta(n^{\log_9{3}})=\Theta(n^{1/2})$,
   by Master Method second type, we have: $T(n)\in \Theta(\sqrt{n}\lg{n})$
 
-\item(4 points) $T(n) = 2T(n-1) + n^2$
+\item
+  \begin{fancyquotes}
+    (4 points) $T(n) = 2T(n-1) + n^2$
+  \end{fancyquotes}
 
 
   Assume $T(n)\in\Theta(2^n)$.
@@ -293,9 +314,9 @@ $$T(n) = T(2^m) = S(m) \in\Theta(m^{\lg3}) = \Theta(\lg^{\lg3}n)$$
 \end{enumerate}
 
 
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 % PROBLEM 5
-%-----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 \section{}
 
 \begin{fancyquotes}
@@ -311,7 +332,7 @@ $$T(n) = T(2^m) = S(m) \in\Theta(m^{\lg3}) = \Theta(\lg^{\lg3}n)$$
   \begin{enumerate}
   \item When array is passed by pointer, the upper bound is $O(\lg(N))$.
   \item When array is passed by copying, the upper bound is
-    $N+\frac{N}{2}+\frac{N}{4}+\frac{N}{8}+\cdots+1 = O(N)$.
+    $N+N+N+N+\cdots+N = O(N^2)$.
   \item When array is passed by subarray, the upper bound is same $O(N)$.
   \end{enumerate}
 \item For Merge-Sort algorithm, the recurrences of the worst case are
