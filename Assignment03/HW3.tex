@@ -244,6 +244,34 @@ BIASED2, which is 0 or 1 with same probability.
   \caption{UNBIASED-RANDOM based on BIASED-RANDOM}
 \end{algorithm}
 
+The probability of stop in one circle is $e=2p(1-p)$.
+
+Running time expectation:
+
+\begin{align}
+  \begin{split}
+    E &= 1\times e + 2(1-e)e + 3(1-e)^2e + 4(1-e)^3e + \ldots\\
+    &= e\sum_{i=0}^{\infty}{(i+1)\times(1-e)^i}
+  \end{split}
+\end{align}
+
+Let $T = \sum_{i=0}^{\infty}{(i+1)\times(1-e)^i}$, we have:
+
+\begin{align}
+  \begin{split}
+    (1-e)T &= \sum_{i=0}^{\infty}{(i+1)\times(1-e)^{i+1}}\\
+    T - (1-e)T = eT &= \sum_{i=0}^{\infty}{\times(1-e)^{i}}\\
+    (1-e)eT &= \sum_{i=1}^{\infty}{\times(1-e)^{i}}\\
+    eT - (1-e)eT = e^2T &= 1 - (1-e)^{\infty}\\
+  \end{split}
+\end{align}
+
+Since $e = 2p(1-p) < 1$, so $(1-e)^{\infty}=0$. So we have:
+
+\begin{align}
+  E = eT = e\frac{1}{e^2} = \frac{1}{e} = \frac{1}{2p(1-p)}
+\end{align}
+
 
 % -----------------------------------------------------------------------------
 % PROBLEM 3
