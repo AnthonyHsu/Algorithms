@@ -1,0 +1,403 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage{./../usfassignment}
+\settitle{Assignment 4}
+\setauthor{Wanzhang Sheng}
+\setcourse{CS673: Graduate Algorithms}
+
+\begin{document}
+
+\maketitle % Print the title
+
+% -----------------------------------------------------------------------------
+% PROBLEM 1
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (6 points) Consider a sorted list $L$ of $n$ integers, each of which
+  must be distinct (that is, the list contains no duplicates). $L$ may
+  contain negative elements. Give an algorithm (describe in English,
+  and then give pseudo-code) that finds all indicies $i$ such that
+  $L[i] = i$. Your algorithm should run in $O(\lg(n) + k)$ time, where
+  $k$ is the number of elements $i$ such that $L[i] = i$.
+\end{fancyquotes}
+
+Considering a given position $k$ in $L$, if $L[k]>k$, then
+$L[k+1]>k+1$ since they are integers and no duplicates. Which means
+that there is no elements in the later of $L$ who will $L[t] = t$.
+Simillar if $L[k]<k$, in which case we can drop off the lest part of
+the list.
+
+Every time when we are given by a range of the list, we check the most
+middle element. If it is equal to the position number, then output
+it. Otherwise, we can drop off half of the range by the relationship
+between the element and the position number.
+
+Here is the pseudo-code:
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{ :}{end}
+  \Fn{\textsc{search}{(L, min, max)}}{
+    \If{min > max}{return []}
+    mid = floor((min+max)/2)\;
+    \If{L[mid] < mid}{
+      return search(L, mid+1, max)\;
+    }
+    \If{L[mid] > mid} {
+      return search(L, min, mid-1)\;
+    }
+    return [mid] + search(L, min, mid-1) + search(L, mid+1, max)\;
+  }
+  \caption{Find all $i$ which $L[i]=i$}
+\end{algorithm}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 2
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  Problem 8-2 Sorting in place in linear time Suppose that we have an
+  array of n data records to sort and that the key of each record has
+  the value 0 or 1. An algorithm for sorting such a set of records
+  might posses some subset of the following thre desirable
+  characteristics:
+
+  \begin{enumerate}
+  \item The algorithm runs in $O(n)$ time
+  \item The algorithm is stable
+  \item The algorithm sorts in place, using no more than a constant
+    amount of storage space in addition to the original array
+  \end{enumerate}
+
+\end{fancyquotes}
+
+\begin{enumerate}
+\item
+  \begin{fancyquotes}
+    (3 points) Give an algorithm that satisfies criteria 1 and 2 above.
+  \end{fancyquotes}
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{\,:}{end}
+    \Fn{\textsc{sort\_n\_stable}{(A)}}{
+      \For{item in A}{
+        \tcc{item.key in [0,1]}
+        L[item.key].appendto(item)\;
+      }
+      return L[0] + L[1]\;
+    }
+    \caption{O(n) and stable sort.}
+  \end{algorithm}
+
+\item
+  \begin{fancyquotes}
+    (3 points) Give an algorithm that satisfies criteria 1 and 3 above.
+  \end{fancyquotes}
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{\,:}{end}
+    \Fn{\textsc{sort\_n\_inplace}{(A)}}{
+      i = index of first element in A\;
+      j = index of last elemetn in A\;
+      \While{i < j}{
+        \While{(i < j) and (A[i].key == 0)}{i = i+1\;}
+        \While{(i < j) and (A[j].key == 1)}{j = j-1\;}
+        \If{i < j}{
+          swap A[i] and A[j]\;
+          i = i+1\;
+          j = j-1\;
+        }
+      }
+      return A\;
+    }
+    \caption{O(n) and inplace sort.}
+  \end{algorithm}
+
+\item
+  \begin{fancyquotes}
+    (3 points) Give an algorithm that satisfies criteria 2 and 3 above.
+  \end{fancyquotes}
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{sort\_stable\_inplace}{(A)}}{
+      index = 1\;
+      \While{index < A.length}{
+        \If{A[index].key == 0}{
+          temp = A[index]\;
+          prev = index - 1\;
+          \While{(A[prev] exist) and (A[prev].key == 1)}{
+            A[prev+1] = A[prev]\;
+            prev -= 1\;
+          }
+          A[prev+1] = temp\;
+        }
+        index += 1\;
+      }
+
+      return A\;
+    }
+    \caption{Stable and inplace sort.}
+  \end{algorithm}
+
+\item
+  \begin{fancyquotes}
+    (3 points) Can you use any of your sorting algorithms from parts
+    (a) --- (c) above as the sorting method in line 2 of Radix-Sort,
+    so that Radix-Sort sorts $n$ records with b-bit keys in time
+    $O(bn)$? Explain how or why not
+  \end{fancyquotes}
+
+  Radix-Sort require a sub sort algorithm to be stable. Also, as
+  required to sort $n$ records with $b$-bit in $O(bn)$, the sub sort
+  algorithm should be able to sort $n$ records in $O(n)$. So we can
+  choose the algorithm from (a).
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{radix\_sort}{(A,b,n)}}{
+      \tcc{sort from least significant digit to most significant digit}
+      \For{bit from b to 1}{
+        \For{item in A}{item.key = item.string[bit]}
+        sort\_n\_stable(A)\;
+      }
+      return A\;
+    }
+    \caption{Radix-Sort with sort\_n\_stable.}
+  \end{algorithm}
+
+\item
+  \begin{fancyquotes}
+    Suppose that the $n$ records have keys in the range $1 \ldots
+    k$. Show how to modify counting sort so that it sorts the records
+    in place in $O(n + k)$ time. You may use $O(k)$ storage space
+    outside the original array. Is your algorithm stable? (Hint: How
+    would you do it for $k = 3$?)
+  \end{fancyquotes}
+
+  $O(n+k)$ time with $O(n)$ space stable algorithm:
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{\,:}{end}
+    \Fn{\textsc{improved\_counting\_sort\_with\_n\_space} (A)}{
+      \tcc{item.key in 1\ldots k}
+      \For{item in A}{L[item.key] += 1\;}
+      \For{bit in 2\ldots k}{L[bit] += L[bit-1]\;}
+
+      \tcc{Extend original records with target position}
+      \For{item in A}{
+        \tcc{Assume array start with 0}
+        item.target\_position = L[item.key] - 1\;
+        L[item.key] += 1\;
+      }
+
+      \For{item in A}{
+        \While{item.index != item.target\_position}{
+          swap(item, A[item.target\_position])\;
+        }
+      }
+    }
+    \caption{$O(n+k)$ time with $O(n)$ space stable algorithm.}
+  \end{algorithm}
+
+  Or $O(n+k)$ time with $O(k)$ space stable algorithm:
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{improved\_counting\_sort\_with\_k\_space}{(A)}}{
+      \tcc{item.key in 1\ldots k}
+      \For{item in A}{L[item.key] += 1\;}
+      \For{bit in 2\ldots k}{L[bit] += L[bit-1]\;}
+      L[k+1] = n+1\;
+      \tcc{Now L for the location of the beginning of the final sorted
+        list, add k+1 just for simplification. C for current position.}
+      C = L\;
+      sorted = 0\;
+
+      \While{sorted < A.size}{
+        \For{i in 0\ldots k}{
+          \While{(C[i] < L[i+1]) and (A[C[i]].key == i)}{
+            C[i] += 1\;
+            sorted += 1\;
+          }
+        }
+        \For{i in 0\ldots k}{
+          \If{C[i] < L[i+1]}{
+            index1 = C[i]\;
+            index2 = C[A[C[i]].key]\;
+            swap(A[index1], A[index2])\;
+            C[A[C[i]].key] += 1\;
+            sorted += 1\;
+            break\;
+          }
+        }
+      }
+      return L[0] + L[1] + \ldots + L[k]\;
+    }
+    \caption{$O(n+k)$ time with $O(k)$ space stable algorithm}
+  \end{algorithm}
+
+\end{enumerate}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 3
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (6 points) Let $X[1\ldots n]$ and $Y [1\ldots n]$ be two arrays,
+  each containing $n$ numbers, already in sorted order. Give
+  $O(\lg(n))$-time algorithm to find the median of all $2n$ elements
+  in arrays $X$ and $Y$.
+\end{fancyquotes}
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{median}{(A, B, n)}}{
+    mid = floor(n/2)\;
+    m1 = A[mid+1]\;
+    m2 = B[mid+1]\;
+    \If{n == 1}{return (m1+m2)/2\;}
+    \If{m1 < m2}{
+      return median(A[1::mid], B[n-mid+1::n], n-mid)\;
+    }{
+      return median(A[n-mid+1::n], B[1::mid], n-mid)\;
+    }
+  }
+  \caption{Find median number of two sorted arrays.}
+\end{algorithm}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 4
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  Special Cases of Select:
+  \begin{enumerate}
+  \item (4 points) Give an algorithm to find the second smallest
+    element in a list of $n$ elements in at most $n +
+    \lceil\lg{n}\rceil - 2$ comparisons. Note: Your algorithm can use
+    no more than $n + \lceil\lg{n}\rceil - 2$ total comparisons in the
+    worst case. Hint: Find the smallest element, too.
+  \item (4 points) Give an algorithm to find the $3rd$ smallest
+    element in a list, using the smallest number of worst-case
+    comparisons. Exactly how many comparisons does your algorithm take
+    in the worst case? Hint: Use your solution to part a | you will
+    need to find the smallest and second-smallest element as well!
+  \end{enumerate}
+\end{fancyquotes}
+
+We can compare the elements by pair.
+And take the less one as the parent of these two in a tree.
+By this we can gererate a compare tree in $\frac{n}{2} + \frac{n}{4} +
+\frac{n}{8} +\ldots+ 1 = n-1$ time.
+Then the root of the tree is the smallest element in the array.
+
+Since the second smallest element in the array can only be killed by
+the smallest element during the comparisions.
+We can track the path of the smallest element to find the smallest of
+what it killed.
+The number of the elements killed by the smallest element is
+$\lg(n) - 1$, so the total comparisions will be $n + \lg(n) - 2$.
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{second}{(A)}}{
+    offset = 2**(floor(log(A.length)))-1\tcc*{offset of the all parents}
+    L = [Inf]*(2n+1)\tcc*{Init as Inf for the whole tree}
+    \tcc{Fill in the leaf nodes}
+    \For{index from 1 to A.length}{
+      L[index+n] = A[index]\;
+    }
+
+    \tcc{Build the tree}
+    \For{index from n downto 1}{
+      L[index] = min(L[index*2], L[index*2+1])\;
+    }
+
+    first = L[1]\tcc*{the smallest one}
+    second = Inf\tcc*{the second smallest one we don't know yet}
+    index = 1\;
+    \While{index < 2n+1}{
+      \eIf{L[index*2] == first\tcc*{I hope this not count to the comparisions}}{
+        \tcc{It came from the left, and killed right}
+        second = min(second, L[index*2+1])\;
+        index = index*2\;
+      }{
+        \tcc{It came from the right, and killed left}
+        second = min(second, L[index*2])\;
+        index = index*2+1\;
+      }
+    }
+
+    return second\;
+  }
+  \caption{Find the second smallest number in the given array.}
+\end{algorithm}
+
+It's the same when we finding the $3rd$ smallest element.
+It will only be killed by the smallest and the second smallest elements.
+The worst case will use $n-1+\lg(n)-1+2(\lg(n)-1) = n + 3\lg(n) - 4$ comparisions.
+
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{killed}{(L, start, standard)}}{
+    killer = L[start]\tcc*{killer is the element we need to follow}
+    ans = Inf\tcc*{the smallest killed which we don't know yet}
+    place = Inf\tcc*{where the ans be killed}
+    index = start\;
+    \While{index < 2n+1}{
+      \eIf{L[index*2] == killer}{
+        \tcc{It came from the left, and killed right}
+        \If{(L[index*2+1]>standard) and (ans > L[index*2+1])}{
+          ans = L[index*2+1]\;
+          place = index*2+1\;
+        }
+        index = index*2\;
+      }{
+        \tcc{It came from the right, and killed left}
+        \If{(L[index*2]>standard) and (ans > L[index*2])}{
+          ans = L[index*2]\;
+          place = index*2\;
+        }
+        index = index*2+1\;
+      }
+    }
+
+    return ans, place\;
+  }
+
+  \Fn{\textsc{third}{(A)}}{
+    offset = 2**(floor(log(A.length)))-1\tcc*{offset of the all parents}
+    L = [Inf]*(2n+1)\tcc*{Init as Inf for the whole tree}
+    \tcc{Fill in the leaf nodes}
+    \For{index from 1 to A.length}{
+      L[index+n] = A[index]\;
+    }
+
+    \tcc{Build the tree}
+    \For{index from n downto 1}{
+      L[index] = min(L[index*2], L[index*2+1])\;
+    }
+
+    first = L[1]\;
+    second, place = killed(L, 1, first)\;
+    third, place = min(killed(L, 1, second), killed(L, place, second))\;
+
+    return third\;
+  }
+  \caption{Find the third smallest number in the given array.}
+\end{algorithm}
+
+\pagebreak
+
+\end{document}
