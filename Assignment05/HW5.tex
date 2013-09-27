@@ -1,0 +1,152 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage{./../usfassignment}
+\settitle{Assignment 5}
+\setauthor{Wanzhang Sheng}
+\setcourse{CS673: Graduate Algorithms}
+
+\begin{document}
+
+\maketitle % Print the title
+
+% -----------------------------------------------------------------------------
+% PROBLEM 1
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (4 points) Does inserting and then immmediately deleting a unique
+  element from a Binary Search Tree always leave the same tree? Does
+  inserting and then immediatley deleting a unique element from a
+  Red/Black tree always leave the same tree?
+\end{fancyquotes}
+
+Insert and delete a unique element in BST \textbf{always} leave the
+same tree. Since the element is always be inserted as a leaf, delete a
+leaf do not effect other nodes in the BST.
+
+Inserting and deleting a unique element in RBT \textbf{may} change the
+tree. Since inserting and deleting both may use rotating which is a
+action changed other nodes. Consider inserting a node caused rotating
+but the element still a leaf, then after deleting the tree will be
+different than before.
+
+%\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 2
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (8 points) Exercise 14.3-6 (MIN-GAP) Show how to extend a red-black
+  tree to support the operation MIN-GAP, which gives the magnitude of
+  the difference of the two closest numbers in the tree. For example,
+  if $Q = \{1, 5, 9, 15, 18, 22\}$ then MIN-GAP($Q$) returns $18-15 = 3$
+  since $15$ and $18$ are the two closest numbers in $Q$.
+\end{fancyquotes}
+
+Make $Q$ as a red-black tree $A$, then extend every node to have two
+more fields of the minimal and maximal element of the subtree.
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{min-gap}{(A, node)}}{
+    return min(node.val - node.left.max, node.right.min - node.val,
+    min-gap(A, node.left), min-gap(A, node.right))
+  }
+  \caption{Min-Gap of the given A in $O(n)$.}
+\end{algorithm}
+
+When inserting or deleting a node, we can update the fields of the
+nodes in $O(\lg{n})$, by node.min = min(node.val, node.left.min) and
+node.max = max(node.val, node.right.max). At the same time, let the
+min and max fields of the null node be -inf and inf.
+
+When we need to rotate the nodes, we can use the same method to
+update the fields in $O(1)$ for each node, so that the total operation
+will stay in $O(\lg{n})$.
+
+%\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 3
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (8 points) Show how to extend a red-black tree (that contains
+  floating point numbers) so that you can calculate the average
+  element (arithmetic mean) in constant time (while still taking
+  $O(\lg{n})$ time for insert, find and delete).
+\end{fancyquotes}
+
+Extend two fields for the sum and the size of the subtree, then the
+average number of the subtree by $\text{ave} = \text{sum} / \text{size}$.
+And at the same time, no effect of find operation.
+When inserting and deleting a element, update the nodes on the path
+by $\text{sum}_p = \text{sum}_{lc} + \text{sum}_{rc} + \text{val}_p$,
+$\text{size}_p = \text{size}_{lc} + \text{size}_{rc} + 1$, which will
+let the time cost stays in $O(\lg{n})$.
+
+
+%\pagebreak
+
+
+% -----------------------------------------------------------------------------
+% PROBLEM 4
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  Problem 14-2 Josephus permutations The Josephus problem is defined
+  as follows. Suppose that $n$ people are arranged in a circle and
+  that we are given a positive number $m\leq n$. Beginning with a
+  designated first person, we proceed around the circle, removing
+  every $m$th person. After each person is removed, counting continues
+  around the circle that remains. This process continues until all $n$
+  people have been removed. The order in which the peope are removed
+  from the circle defines the $(n,m)$-Josephus permitation of the
+  integers $1,2,\ldots,n$. For example, the $(7,3)$-Josephus
+  permutation is $<3,6,2,7,5,1,4>$.
+\end{fancyquotes}
+
+\begin{enumerate}
+\item
+  \begin{fancyquotes}
+    (5 points) Suppose that $m$ is a constant. Describe an $O(n)$-time
+    algorithm that, given an integer $n$, outputs the $(n,m)$-Josephus
+    permutation.
+  \end{fancyquotes}
+
+  Just simulate the game process, we can find the number for each time
+  in $O(m)$ and delete it in $O(1)$ if we use link-list. Since we need
+  find $n$ times, the algorithm will run in $O(mn)$ time. If we treat
+  $m$ as a constant, then the algorithm is $O(n)$.
+
+\item
+  \begin{fancyquotes}
+    (5 points) Suppose that $m$ is not a constant. Describe an
+    $O(n\lg{n})$-time algorithm that, given an integer $n$, outputs
+    the $(n,m)$-Josephus permutation. Note that by not a constant
+    here we mean that $m$ could be a function of $n$, like $n=2$,
+    instead of a constant like $5$. $m$ still does not change over the
+    course of the algorithm.
+  \end{fancyquotes}
+
+  We create a balanced tree for these $n$ numbers in $O(n\lg{n})$ and
+  extend the nodes with a additional field indicated the size of the
+  subtree in $O(n)$. So that we can determine the rank in the subtree
+  of any node in $O(1)$ by $\text{rank} = \text{left-child}.\text{size}+1$.
+
+  Finding the next node by determine the rank $\text{next-rank} =
+  (\text{current-rank} + m) \bmod \text{current-size}$, and then find
+  the node in $O(\lg{n})$. Since we need doing $n$ times, the final
+  time cost will be $O(\lg{n})$.
+
+
+\end{enumerate}
+
+
+%\pagebreak
+
+\end{document}
