@@ -139,10 +139,20 @@ let the time cost stays in $O(\lg{n})$.
   of any node in $O(1)$ by $\text{rank} = \text{left-child}.\text{size}+1$.
 
   Finding the next node by determine the rank $\text{next-rank} =
-  (\text{current-rank} + m) \bmod \text{current-size}$, and then find
-  the node in $O(\lg{n})$. Since we need doing $n$ times, the final
-  time cost will be $O(\lg{n})$.
+  ((\text{current-rank} + m -2) \bmod \text{current-size}) + 1$, and
+  then find the node in $O(\lg{n})$. Using the equation $(a-1)\bmod n
+  +1$ to change the result from $0\dots n-1$ to $1\dots n$. Since we
+  need doing $n$ times, the final time cost will be $O(n\lg{n})$.
 
+  Here is the math form:
+
+  \begin{equation*}
+    \text{rank}(i)=
+    \begin{cases}
+      1 & \text{if}\ i=0\ \text{or}\ i=n \\
+      ((\text{rank}(i-1)+m-2) \bmod (n-(i-1))) +1 & \text{otherwise}
+    \end{cases}
+  \end{equation*}
 
 \end{enumerate}
 
