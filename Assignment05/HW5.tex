@@ -20,15 +20,18 @@
   Red/Black tree always leave the same tree?
 \end{fancyquotes}
 
-Insert and delete a unique element in BST \textbf{always} leave the
-same tree. Since the element is always be inserted as a leaf, delete a
-leaf do not effect other nodes in the BST.
+Insert and then immediately delete a unique element in BST
+\textbf{always} leave the same tree. Since the element is always be
+inserted as a leaf, delete a leaf do not effect other nodes in the
+BST.
 
-Inserting and deleting a unique element in RBT \textbf{may} change the
-tree. Since inserting and deleting both may use rotating which is a
-action changed other nodes. Consider inserting a node caused rotating
-but the element still a leaf, then after deleting the tree will be
-different than before.
+Inserting and then immediately deleting a unique element in RBT
+\textbf{may} change the tree. Since inserting and deleting both may
+use rotating which is a action changed other nodes. Consider inserting
+a node caused rotating but the element still a leaf, then after
+deleting the tree will be different than before. But if there is only
+one element in the tree and insert another one then delete it will let
+it keep the same tree.
 
 %\pagebreak
 
@@ -45,8 +48,8 @@ different than before.
   since $15$ and $18$ are the two closest numbers in $Q$.
 \end{fancyquotes}
 
-Make $Q$ as a red-black tree $A$, then extend every node to have two
-more fields of the minimal and maximal element of the subtree.
+Make $Q$ as a red-black tree $A$, then extend nodes of two more fields
+for the minimal and maximal element of the subtree.
 
 \begin{algorithm}[H]
   \SetKwProg{Fn}{Function}{}{end}
@@ -63,8 +66,8 @@ node.max = max(node.val, node.right.max). At the same time, let the
 min and max fields of the null node be -inf and inf.
 
 When we need to rotate the nodes, we can use the same method to
-update the fields in $O(1)$ for each node, so that the total operation
-will stay in $O(\lg{n})$.
+update the fields in $O(1)$ for each node, so that the rotating operation
+will stay in $O(1)$.
 
 %\pagebreak
 
@@ -81,16 +84,15 @@ will stay in $O(\lg{n})$.
 \end{fancyquotes}
 
 Extend two fields for the sum and the size of the subtree, then the
-average number of the subtree by $\text{ave} = \text{sum} / \text{size}$.
-And at the same time, no effect of find operation.
-When inserting and deleting a element, update the nodes on the path
-by $\text{sum}_p = \text{sum}_{lc} + \text{sum}_{rc} + \text{val}_p$,
-$\text{size}_p = \text{size}_{lc} + \text{size}_{rc} + 1$, which will
-let the time cost stays in $O(\lg{n})$.
-
+average number of the subtree is $\text{node.ave} = \text{node.sum} /
+\text{node.size}$. And at the same time, no effect of find
+operation. When inserting and deleting a element, update the nodes on
+the path by $\text{node.sum} = \text{node.left.sum} +
+\text{node.right.sum} + \text{node.val}$, $\text{node.size} =
+\text{node.left.size} + \text{node.right.size} + 1$, which will let
+the time cost stays in $O(\lg{n})$.
 
 %\pagebreak
-
 
 % -----------------------------------------------------------------------------
 % PROBLEM 4
@@ -118,10 +120,10 @@ let the time cost stays in $O(\lg{n})$.
     permutation.
   \end{fancyquotes}
 
-  Just simulate the game process, we can find the number for each time
-  in $O(m)$ and delete it in $O(1)$ if we use link-list. Since we need
-  find $n$ times, the algorithm will run in $O(mn)$ time. If we treat
-  $m$ as a constant, then the algorithm is $O(n)$.
+  Just simulate the game process by link list, we can find the number
+  for each time in $O(m)$ and delete it in $O(1)$. Since we need find
+  $n$ times, the algorithm will run in $O(mn)$. If we treat $m$ as a
+  constant, then the algorithm is $O(n)$.
 
 \item
   \begin{fancyquotes}
@@ -136,7 +138,25 @@ let the time cost stays in $O(\lg{n})$.
   We create a balanced tree for these $n$ numbers in $O(n\lg{n})$ and
   extend the nodes with a additional field indicated the size of the
   subtree in $O(n)$. So that we can determine the rank in the subtree
-  of any node in $O(1)$ by $\text{rank} = \text{left-child}.\text{size}+1$.
+  of any node in $O(1)$ by $\text{node.rank} =
+  \text{node.left.size}+1$. And find the $i$th element in $O(\lg{n})$
+  by
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{find\_rank}{(node, i)}}{
+      \eIf{node.rank = i}{
+        return node
+      }{
+        \eIf{node.rank > i}{
+          return find\_rank(node.left, i)
+        }{
+          return find\_rank(node.right, i - node.rank)
+        }
+      }
+    }
+    \caption{Find the $i$th element in a balanced tree.}
+  \end{algorithm}
 
   Finding the next node by determine the rank $\text{next-rank} =
   ((\text{current-rank} + m -2) \bmod \text{current-size}) + 1$, and
