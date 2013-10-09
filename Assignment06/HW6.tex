@@ -1,0 +1,266 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage{./../usfassignment}
+\usepackage{soul}               %Delete line
+\settitle{Assignment 6}
+\setauthor{Wanzhang Sheng}
+\setcourse{CS673: Graduate Algorithms}
+
+\begin{document}
+
+\maketitle % Print the title
+
+% -----------------------------------------------------------------------------
+% PROBLEM 1
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (8 ponts) Exercise 15.4--5 Give an $O(n^2)$ algorithm to find the
+  longest monotonically increasing subsequence of a sequence of $n$
+  numbers.
+\end{fancyquotes}
+
+Table: $f(i)$ indicated the longest monotonically increasing
+subsequence length with first $i$th number and the $i$th number is
+picked.
+
+Formula:
+
+\begin{equation*}
+  f(i)=
+  \begin{cases}
+    1 & \text{if}\ i==1 \\
+    \max\{f(j)\}+1 & j<i, A[j]\leq A[i]\ (\text{or}\ A[j]<A[i]\ \text{for
+    strictly increasing})
+  \end{cases}
+\end{equation*}
+
+Order: from $1$ to $n$.
+
+Code:
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{LMIS}{(A, n)}}{
+    L = array of n and filled by 0\;
+    L[1] = 1\;
+    \For{i = 2 $\rightarrow$ n}{
+      \For{j = 1 $\rightarrow$ i-1}{
+        \tcc{A[j]<A[i] is strictly increasing}
+        \If{(A[j] $\leq$ A[i]) and (L[j]>L[i])}
+        {
+          L[i] = L[j]\;
+        }
+      }
+      L[i] += 1\;
+    }
+    return L[n]\;
+  }
+  \caption{The longest monotonically increasing subsequence.}
+\end{algorithm}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 2
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (8 points) Problem 15--2 Longest Palendrome subsequence.
+\end{fancyquotes}
+
+Table: $f(i,j), 1\leq i\leq j\leq n$ indicated the longest palendrome
+subsequence within $i$th number to $j$th number.
+
+Formula:
+
+\begin{equation*}
+  f(i,j)=
+  \begin{cases}
+    1 & \text{if}\ i==j\\
+    f(i-1,j-1)+1 & \text{if}\ A[i]==A[j]\\
+    \max\{f(i-1,j), f(i,j-1)\} & \text{otherwise}
+  \end{cases}
+\end{equation*}
+
+Order: from smaller range (which means $j-i+1$) to larger range.
+
+Code:
+
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{LPS}{(A, n)}}{
+    L = array of n*n\;
+    \For{i = 1 $\rightarrow$ n}{
+      L[i,i] = 1\;
+    }
+
+    \For{k = 1 $\rightarrow$ n-1}{
+      \For{i = 1 $\rightarrow$ n-k}{
+        j = i+k\;
+        \eIf{A[i] == A[j]}{
+          L[i,j] = L[i-1,j-1] + 1\;
+        }{
+          L[i,j] = $\max$(L[i-1,j], L[i,j-1])\;
+        }
+      }
+    }
+
+    return L[1,n]\;
+  }
+  \caption{Find the longest palendrome subsequence.}
+\end{algorithm}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 3
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  Consider the alphabet $\Sigma = \{a,b,c\}$ the elements of $\Sigma$
+  have the following multiplication table, which is neither
+  communative nor associative:
+
+  \begin{tabular}[c]{|c|c|c|c|}
+    \hline
+    & a & b & c \\
+    \hline
+    a & b & b & a \\
+    \hline
+    b & c & b & a \\
+    \hline
+    c & a & c & c \\
+    \hline
+  \end{tabular}
+
+  so, $ab = b$, $ba = c$, $bc = a$, $cb = b$, and so on.
+\end{fancyquotes}
+
+
+\begin{enumerate}
+\item
+  \begin{fancyquotes}
+    (8 points) Find a dynamic programming algorithm that examines a
+    string $x = x_1x_2x_3\ldots x_n$ and decides whether or not it is
+    possible to parenthesize $x$ such that the value of the resulting
+    expression is $a$. For example, if $x = bbbba$, your algorithm
+    should retun ``yes'', since $(b(bb))(ba) = a$. For the string $x =
+    bac$, your algorithm should return ``no'' (since $(ba)c = c$ and
+    $b(ac) = c$.
+  \end{fancyquotes}
+
+  Tables:
+  $f(i,j,k), 1\leq i\leq j\leq n, k\in \Sigma$ indicated if it's
+  possible to generate $k$ within $i$th to $j$th symbols of $x$.
+  $T(m,n)$ is the multiplication table.
+
+  Formula:
+  \begin{equation*}
+    f(i,j,k)=
+    \begin{cases}
+      true & \text{if}\ i==j\ \text{and}\ x[i]==k\\
+      \bigcup\{f(i,l,m) \cap f(l+1,j,n) \cap (T[m, n] == k)\} &
+      i\leq l<j, m\in\Sigma ,n\in\Sigma
+    \end{cases}
+  \end{equation*}
+
+  Order: from smaller range (which means $j-i+1$) to larger range.
+
+  Code:
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{wired\_string\_to\_a}{(x)}}{
+      F = array size of n*n*3 filled by false\;
+
+      \For{i = 1 $\rightarrow$ n}{
+        F[i,i,x[i]] = true\;
+      }
+
+      \For{r = 1 $\rightarrow$ n-1}{
+        \For{i = 1 $\rightarrow$ n-r}{
+          j = i+r\;
+          \For{k $\in\Sigma$}{
+            \tcc{Now we have i,j,k. Splitting next.}
+            \For{l = i $\rightarrow$ j-1}{
+              \For{m $\in\Sigma$}{
+                \For {n $\in\Sigma$}{
+                  \If{F[i,l,m] and F[l+1,j,n] and (T[m,n]==k)}{
+                    F[i,j,k] = true\;
+                    next k\;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      \eIf{F[1,n,a]}{
+        return ``yes''\;
+      }{
+        return ``no''\;
+      }
+    }
+    \caption{Determine whether wired string x can generate a.}
+  \end{algorithm}
+
+
+\item
+  \begin{fancyquotes}
+    (6 points) Modify your algoritm from part $a$ so that instead of
+    returning ``yes'' or ``no'', it returns the number of the
+    expression can be parenthesized to get the answer $a$.
+  \end{fancyquotes}
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{wired\_string\_to\_a}{(x)}}{
+      F = array of n*n*3 filled by false\;
+      \textbf{P = array of n*n*3 filled by 0}\;
+
+      \For{i = 1 $\rightarrow$ n}{
+        F[i,i,x[i]] = true\;
+      }
+
+      \For{r = 1 $\rightarrow$ n-1}{
+        \For{i = 1 $\rightarrow$ n-r}{
+          j = i+r\;
+          \For{k $\in\Sigma$}{
+            \tcc{Now we have i,j,k. Splitting next.}
+            \For{l = i $\rightarrow$ j-1}{
+              \For{m $\in\Sigma$}{
+                \For {n $\in\Sigma$}{
+                  \If{F[i,l,m] and F[l+1,j,n] and (T[m,n]==k)}{
+                    F[i,j,k] = true\;
+                    \textbf{P[i,j,k] += P[i,l,m] * P[l+1,j,n]}\;
+                    \st{next k}\;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      \eIf{F[1,n,a]}{
+        \st{return ``yes''}\;
+      }{
+        \st{return ``no''}\;
+      }
+      return P[1,n,a]
+    }
+    \caption{How many ways can wired string x generate a.}
+  \end{algorithm}
+
+\end{enumerate}
+\pagebreak
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
