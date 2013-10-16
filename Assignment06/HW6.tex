@@ -29,7 +29,7 @@ Formula:
 \begin{equation*}
   f(i)=
   \begin{cases}
-    1 & \text{if}\ i==1 \\
+    1 & \text{if}\ i==1\ \text{or}\ \text{All}\ A[j]>A[j] \\
     \max\{f(j)\}+1 & j<i, A[j]\leq A[i]\ (\text{or}\ A[j]<A[i]\ \text{for
     strictly increasing})
   \end{cases}
@@ -46,7 +46,7 @@ Code:
     L[1] = 1\;
     \For{i = 2 $\rightarrow$ n}{
       \For{j = 1 $\rightarrow$ i-1}{
-        \tcc{A[j]<A[i] is strictly increasing}
+        \tcc{A[j]<A[i] if strictly increasing}
         \If{(A[j] $\leq$ A[i]) and (L[j]>L[i])}
         {
           L[i] = L[j]\;
@@ -78,31 +78,34 @@ Formula:
 \begin{equation*}
   f(i,j)=
   \begin{cases}
+    0 & \text{if}\ i>j\\
     1 & \text{if}\ i==j\\
-    f(i-1,j-1)+1 & \text{if}\ A[i]==A[j]\\
-    \max\{f(i-1,j), f(i,j-1)\} & \text{otherwise}
+    f(i+1,j-1)+2 & \text{if}\ A[i]==A[j]\\
+    \max\{f(i+1,j), f(i,j-1)\} & \text{otherwise}
   \end{cases}
 \end{equation*}
 
-Order: from smaller range (which means $j-i+1$) to larger range.
+Order: from smaller range (which means $j-i+1$) to larger range. From
+$1$ to $n$.
 
 Code:
 
 \begin{algorithm}[H]
   \SetKwProg{Fn}{Function}{}{end}
   \Fn{\textsc{LPS}{(A, n)}}{
-    L = array of n*n\;
+    L = array of n*n filled by 0\;
     \For{i = 1 $\rightarrow$ n}{
       L[i,i] = 1\;
     }
 
+    \tcc{Range from 2 to n}
     \For{k = 1 $\rightarrow$ n-1}{
       \For{i = 1 $\rightarrow$ n-k}{
         j = i+k\;
         \eIf{A[i] == A[j]}{
-          L[i,j] = L[i-1,j-1] + 1\;
+          L[i,j] = L[i+1,j-1] + 2\;
         }{
-          L[i,j] = $\max$(L[i-1,j], L[i,j-1])\;
+          L[i,j] = $\max$(L[i+1,j], L[i,j-1])\;
         }
       }
     }
@@ -147,8 +150,8 @@ Code:
     string $x = x_1x_2x_3\ldots x_n$ and decides whether or not it is
     possible to parenthesize $x$ such that the value of the resulting
     expression is $a$. For example, if $x = bbbba$, your algorithm
-    should retun ``yes'', since $(b(bb))(ba) = a$. For the string $x =
-    bac$, your algorithm should return ``no'' (since $(ba)c = c$ and
+    should retun \textsc{yes}, since $(b(bb))(ba) = a$. For the string $x =
+    bac$, your algorithm should return \textsc{no} (since $(ba)c = c$ and
     $b(ac) = c$.
   \end{fancyquotes}
 
@@ -161,7 +164,7 @@ Code:
   \begin{equation*}
     f(i,j,k)=
     \begin{cases}
-      true & \text{if}\ i==j\ \text{and}\ x[i]==k\\
+      \text{true} & \text{if}\ i==j\ \text{and}\ x[i]==k\\
       \bigcup\{f(i,l,m) \cap f(l+1,j,n) \cap (T[m, n] == k)\} &
       i\leq l<j, m\in\Sigma ,n\in\Sigma
     \end{cases}
@@ -200,9 +203,9 @@ Code:
       }
 
       \eIf{F[1,n,a]}{
-        return ``yes''\;
+        return yes\;
       }{
-        return ``no''\;
+        return no\;
       }
     }
     \caption{Determine whether wired string x can generate a.}
@@ -212,7 +215,7 @@ Code:
 \item
   \begin{fancyquotes}
     (6 points) Modify your algoritm from part $a$ so that instead of
-    returning ``yes'' or ``no'', it returns the number of the
+    returning \textsc{yes} or \textsc{no}, it returns the number of the
     expression can be parenthesized to get the answer $a$.
   \end{fancyquotes}
 
@@ -224,6 +227,7 @@ Code:
 
       \For{i = 1 $\rightarrow$ n}{
         F[i,i,x[i]] = true\;
+        P[i,i,x[i]] = 1\;
       }
 
       \For{r = 1 $\rightarrow$ n-1}{
@@ -247,9 +251,9 @@ Code:
       }
 
       \eIf{F[1,n,a]}{
-        \st{return ``yes''}\;
+        \st{return yes}\;
       }{
-        \st{return ``no''}\;
+        \st{return no}\;
       }
       return P[1,n,a]
     }
