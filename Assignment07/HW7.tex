@@ -1,0 +1,238 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage{./../usfassignment}
+\settitle{Assignment 7}
+\setauthor{Wanzhang Sheng}
+\setcourse{CS673: Graduate Algorithms}
+
+\begin{document}
+
+\maketitle % Print the title
+
+% -----------------------------------------------------------------------------
+% PROBLEM 1
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  Let $p_1,p_2,\ldots,p_n$ be $n$ programs to be stored on a
+  disk. Program $p_i$ requires $s_i$ kilobytes of storage, and the
+  capacity of the disk is $D$, where $s_1+s_2+\cdots+s_n > D$.
+\end{fancyquotes}
+
+\begin{enumerate}
+\item
+  \begin{fancyquotes}
+    (8 points) Give an efficient algorithm to determine which programs
+    to store on the disk so that the total number of programs on the
+    disk is maximized. If you give a greedy algorithm, be sure to
+    prove that your algorithm is correct by proving both greedy choice
+    and optimal program substructure. What is the running time of
+    your algorithm, in terms of $n$?
+  \end{fancyquotes}
+
+  Greedy algorithm: pick the smallest program every time until no more
+  can be put on the disk. Time cost in $O(n\lg{n})$.
+
+  Prove:
+
+  Greedy choice:
+  There is at least one optimal solution which contain the greedy
+  choice, putting the smallest one on the disk. Assume that there is
+  no optimal solution contain the greedy choice. Pick a solution $S$,
+  and replace any one $p_i$ by $p_1$(the smallest one) to get a new
+  solution $S_2$. Since $p_1\leq p_i$ and $|S_1| = |S_2|$, $S_2$ is
+  also a optimal solution. Contradiction. So there is at least one
+  optimal solution contains the greedy choice.
+
+  Optimal substructure:
+  Assume there is no optimal solution contains the greedy choice but
+  not optimal substructure.
+  Let $S$ be the optimal solution, which contains $p_j$ but not $p_i$
+  and $p_i<p_j$. Generate $S_2$ by replacing $p_j$ by $p_i$, so
+  $|S_1|=|S_2|$. Since $p_i<p_j$, $S_2$ is also a optimal
+  solution. Contradiction.
+
+  So greedy algorithm works.
+
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{GreedyPick}{(P,n,d)}}{
+      P = qsort(P)\tcc*{$O(n\ln{n})$}
+      ans = 0 \;
+      sum = 0 \;
+      \tcc{Assume P start with 0}
+      \While{(ans<n) and (sum + P[ans] $\leq$ d)}{
+        sum += P[ans] \;
+        ans +=1 \;
+      }
+      return ans \;
+    }
+    \caption{Return the max number of program can be on the disk.}
+  \end{algorithm}
+
+
+\item
+  \begin{fancyquotes}
+    (8 points) Give an efficient algorithm to determine which
+    programs to store on the disk so that as much of the disk as
+    possible is utilized. If you give a greedy algorithm, be sure to
+    prove that your algorithm is correct by proving both greedy
+    choice and optimal program substructure. What is the running time
+    of your algorithm, in terms of $n$?
+  \end{fancyquotes}
+
+  DP algorithm: Time cost in $O(n^2)$.
+
+  Table:
+  $f(i,j), i\leq n, j\leq D$ indicated the max space usage with first
+  $i$th programs and $j$ disk limits.
+
+  Formula:
+  \begin{equation*}
+    f(i,j) =
+    \begin{cases}
+      0 & i\leq 0 \lor j\leq 0\\
+      \max(f(i-1,j), f(i-1,j-p_i)+p_i) & i\geq 1
+    \end{cases}
+  \end{equation*}
+
+  Order:
+  By $i$ from $0$ to $n$, then $j$ from $0$ to $D$.
+
+  Code:
+  \begin{algorithm}[H]
+    \SetKwProg{Fn}{Function}{}{end}
+    \Fn{\textsc{disk\_space}{(P,n,D)}}{
+      F = array of n*D filled by 0 \;
+      \For{i = 1 $\rightarrow$ n}{
+        \For{j = 1 $\rightarrow$ D}{
+          \If{j >= P[i]}{
+            F[i, j] = F[i-1, j-P[i]] + P[i] \;
+          }
+          F[i, j] = $\max$(F[i-1, j], F[i, j]) \;
+        }
+      }
+      return F[n, D] \;
+    }
+    \caption{Return the max space usage with given programs.}
+  \end{algorithm}
+
+\end{enumerate}
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 2
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (8 points) Problem 15--3 Edit Distance
+\end{fancyquotes}
+
+Table:
+$f(i,j), 1\leq i\leq m, 1\leq j\leq n$ indicated the minimal cost to
+transfer first $i$th chars of $x$ into $j$th chars of $y$.
+
+Formula:
+\begin{equation*}
+  f(i,j) =
+  \begin{cases}
+    0 & i==0 \land j==0\\
+
+    \min(f(i,j), f(i-1,j-1)+cost(copy)) & x[i]==y[j]\\
+    \min(f(i,j), f(i-1,j-1)+cost(replace))\\
+    \min(f(i,j), f(i-1,j)+cost(delete))\\
+    \min(f(i,j), f(i,j-1)+cost(insert))\\
+    \min(f(i,j), f(i-2,j-2)+cost(twiddle)) & x[i]==y[j-1],
+    x[i-1]==y[j]\\
+    \min(f(i,j), f(k,j)+cost(kill)) & 0\leq k\leq i-1, i==m, j==n\\
+  \end{cases}
+\end{equation*}
+
+Order:
+By $i$ from $0$ to $m$, then $j$ from $0$ to $n$.
+
+Code:
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{edit\_distance}{(X,m,Y,n)}}{
+    F = array of m*n filled by infinity \;
+    F[0, 0] = 0 \;
+    \For{i = 0 $\rightarrow$ to m}{
+      \For{j = 0 $\rightarrow$ to n}{
+        \If{i $\geq$ 1, j $\geq$ 1, x[i]==y[j]}{
+          F[i, j] = $\min$(F[i, j], F[i-1,j-1] + cost(copy))
+        }
+        \If{i $\geq$ 1, j $\geq$ 1}{
+          F[i, j] = $\min$(F[i, j], F[i-1,j-1] + cost(replace))
+        }
+        \If{i $\geq$ 1}{
+          F[i, j] = $\min$(F[i, j], F[i-1,j] + cost(delete))
+        }
+        \If{j $\geq$ 1}{
+          F[i, j] = $\min$(F[i, j], F[i,j-1] + cost(insert))
+        }
+        \If{i $\geq$ 2, j $\geq$ 2, x[i]==y[j-1], x[i-1]==y[j]}{
+          F[i, j] = $\min$(F[i, j], F[i-2,j-2] + cost(twiddle))
+        }
+      }
+    }
+    \For{k = 0 $\rightarrow$ m-1}{
+      F[m, n] = $\min$(F[m, n], F[k,n] + cost(kill))
+    }
+    return F[m, n] \;
+  }
+  \caption{Return the minimal distance of edit from X to Y.}
+\end{algorithm}
+
+Time Cost: $O(mn)$
+
+Space Cost: $O(mn)$
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 3
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (6 points) Exercise 16.2--5 Finding closed intervals
+
+  Describe an efficient algorithm that, given a set $x_1, x_2, \ldots,
+  x_n$ of points on the real line, determines the smallest set of
+  unit-length closed intervals that contains all of the given
+  points. Argue that your algorithm is correct.
+\end{fancyquotes}
+
+Greedy algorithm:
+Sort the set in $O(n\lg{n})$. Find the most left point not covered
+$x_i$, add interval $[x_i,x_i+1]$ into solution. Until all points are
+covered, which the time cost is $O(n)$ since every point will be
+accessed only once. The total time cost is $O(n\lg{n})$.
+
+Greedy choice:
+There is at least one optimal solution which contain the greedy
+choice, $[x_{smallest},x_{smallest}+1]$. Assume there is no optimal
+solution contains the greedy choice. Pick a optimal solution $S$,
+replace the most left interval $p_1$ with $p_2 =
+[x_{smallest},x_{smallest}+1]$ to get $S_2$. Since it's unit-length
+interval, all points covered by $p_1$ will be covered by $p_2$. And
+$|S|=|S_2|$, so $S_2$ is also a optimal solution.
+
+Optimal substructure:
+Assume there is no optimal solution contains the greedy choice but no
+optimal substructure. Let $S$ be the optimal solution. After greedy
+choice we covered first $j$ points, let the rest $n-j$ points are
+covered by $k$ intervals. Consider a new solution $S_2$, the first $j$
+points are samely covered by the greedy choice and the rest $n-j$
+points are covered by optimal substructure. Then the new solution
+$S_2$ is a feasible solution and since the rest points are covered by
+optimal substructure solution, it will use at most $k$ intervals, so
+the new solution $S_2$ is a optimal solution.
+
+Greedy algorithm works.
+
+\pagebreak
+
+\end{document}
