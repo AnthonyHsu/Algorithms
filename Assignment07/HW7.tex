@@ -47,25 +47,29 @@
   Optimal substructure:
   Assume there is no optimal solution contains the greedy choice but
   not optimal substructure.
-  Let $S$ be the optimal solution, which contains $p_j$ but not $p_i$
-  and $p_i<p_j$. Generate $S_2$ by replacing $p_j$ by $p_i$, so
-  $|S_1|=|S_2|$. Since $p_i<p_j$, $S_2$ is also a optimal
-  solution. Contradiction.
+  Let $S$ be the optimal solution, which contains $p_1$ but not
+  contains optimal substructure for the rest $n-1$ programs
+  pick. Generate $S_2$ by replacing the pick for the rest $n-1$
+  programs pick by optimal substructure. Then $|S_1|=|S_2|$. Also
+  substracture is optimal, $S_2$ is also less then $D$ space limits,
+  which means it's a optimal solution. Contradiction.
 
   So greedy algorithm works.
 
   \begin{algorithm}[H]
     \SetKwProg{Fn}{Function}{}{end}
     \Fn{\textsc{GreedyPick}{(P,n,d)}}{
-      P = qsort(P)\tcc*{$O(n\ln{n})$}
-      ans = 0 \;
+      P = qsort(P)\tcc*{By space size of the program in $O(n\ln{n})$}
+      i = 0 \;
       sum = 0 \;
+      set = \{\} \;
       \tcc{Assume P start with 0}
-      \While{(ans<n) and (sum + P[ans] $\leq$ d)}{
-        sum += P[ans] \;
-        ans +=1 \;
+      \While{(i<n) and (sum + P[i].space $\leq$ d)}{
+        sum += P[i].space \;
+        set.add(P[i]) \;
+        i +=1 \;
       }
-      return ans \;
+      return set \;
     }
     \caption{Return the max number of program can be on the disk.}
   \end{algorithm}
@@ -81,7 +85,7 @@
     of your algorithm, in terms of $n$?
   \end{fancyquotes}
 
-  DP algorithm: Time cost in $O(n^2)$.
+  DP algorithm: Time cost in $O(nD)$.
 
   Table:
   $f(i,j), i\leq n, j\leq D$ indicated the max space usage with first
@@ -91,8 +95,8 @@
   \begin{equation*}
     f(i,j) =
     \begin{cases}
-      0 & i\leq 0 \lor j\leq 0\\
-      \max(f(i-1,j), f(i-1,j-p_i)+p_i) & i\geq 1
+      0 & i\leq 0\ \text{or}\ j\leq 0\\
+      \max(f(i-1,j), f(i-1,j-p_i)+p_i) & \text{otherwise}
     \end{cases}
   \end{equation*}
 
@@ -102,17 +106,32 @@
   Code:
   \begin{algorithm}[H]
     \SetKwProg{Fn}{Function}{}{end}
-    \Fn{\textsc{disk\_space}{(P,n,D)}}{
+    \Fn{\textsc{disk\_space}{(P, n, D)}}{
       F = array of n*D filled by 0 \;
+      S = array of n*D filled by 0 \;
       \For{i = 1 $\rightarrow$ n}{
         \For{j = 1 $\rightarrow$ D}{
-          \If{j >= P[i]}{
-            F[i, j] = F[i-1, j-P[i]] + P[i] \;
+          \If{j >= P[i].space}{
+            F[i, j] = F[i-1, j-P[i].space] + P[i].space \;
+            S[i, j] = i \;
           }
-          F[i, j] = $\max$(F[i-1, j], F[i, j]) \;
+          \If{F[i-1, j] > F[i, j]}{
+            F[i, j] = F[i-1, j] \;
+            S[i, j] = 0 \;
+          }
         }
       }
-      return F[n, D] \;
+      set = \{\} \;
+      i = n \;
+      j = D \;
+      \While{i $>$ 0}{
+        \If{S[i, j] > 0}{
+          set.add(i) \;
+          j -= P[i].space \;
+        }
+        i -= 1 \;
+      }
+      return set \;
     }
     \caption{Return the max space usage with given programs.}
   \end{algorithm}
@@ -137,7 +156,7 @@ Formula:
 \begin{equation*}
   f(i,j) =
   \begin{cases}
-    0 & i==0 \land j==0\\
+    0 & i==0\ \text{and}\ j==0\\
 
     \min(f(i,j), f(i-1,j-1)+cost(copy)) & x[i]==y[j]\\
     \min(f(i,j), f(i-1,j-1)+cost(replace))\\
@@ -180,6 +199,7 @@ Code:
     \For{k = 0 $\rightarrow$ m-1}{
       F[m, n] = $\min$(F[m, n], F[k,n] + cost(kill))
     }
+
     return F[m, n] \;
   }
   \caption{Return the minimal distance of edit from X to Y.}
@@ -232,6 +252,25 @@ optimal substructure solution, it will use at most $k$ intervals, so
 the new solution $S_2$ is a optimal solution.
 
 Greedy algorithm works.
+
+Code:
+\begin{algorithm}[H]
+  \SetKwProg{Fn}{Function}{}{end}
+  \Fn{\textsc{FCI}{(X, n)}}{
+    set = \{\} \;
+    A = qsort(X)\tcc*{time cost $O(n\lg{n})$}
+    i = 1 \;
+    \While{i $\leq$ n}{
+      set.add([A[i]..A[i]+1]) \;
+      t = A[i]+1 \;
+      \While{A[i] $\leq$ t}{
+        i += 1 \;
+      }
+    }
+    return set \;
+  }
+  \caption{Return the }
+\end{algorithm}
 
 \pagebreak
 
