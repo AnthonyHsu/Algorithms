@@ -1,0 +1,266 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage{./../usfassignment}
+\settitle{Assignment 8}
+\setauthor{Wanzhang Sheng}
+\setcourse{CS673: Graduate Algorithms}
+
+\begin{document}
+
+\maketitle % Print the title
+
+% -----------------------------------------------------------------------------
+% PROBLEM 1
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (6 points) Suppose we perform a sequence of $n$ operations on a data
+  structure in which the $i$th operation cost is $i$ if $i$ is an
+  exact power of 2 and 1 otherwise.
+\end{fancyquotes}
+
+\begin{enumerate}
+\item
+  \begin{fancyquotes}
+    Use aggregate analysis to determine the amortized cost per operation.
+  \end{fancyquotes}
+
+  \begin{equation}
+    \begin{split}
+      \sum_{i=1}^{\lg{n}}{(2^{i}-1)} + n\\
+      \sum_{i=1}^{\lg{n}}{2^{i}} - \lg{n} + n\\
+      2n-1 + n -\lg{n}\\
+      3n - \lg{n} -1
+    \end{split}
+  \end{equation}
+
+  So the amortized cost per operation is $O(1)$.
+
+\item
+  \begin{fancyquotes}
+    Use the accounting method to determine the amortized cost per operation.
+  \end{fancyquotes}
+
+  Charge for all operation cost of $3$.
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}[hp]{ccc}
+      & actual cost & amortized cost\\
+      \hline
+      $i = 2^k$ & i & 3\\
+      otherwise & 1 & 3
+    \end{tabular}
+  \end{table}
+
+  For the operation which the cost is $i = 2^k$, it's already paid by
+  the $2^{k-1}+1$ to $2^{k}-1$ of $(2^{k-1}-1)*(3-1)=2^k-2$. Plus the
+  $3$ paid by $i$, it has $1$ more after $i$th operation.
+
+  So the amortized cost per operation is $O(3) = O(1)$.
+
+\item
+  \begin{fancyquotes}
+    Use the potential method to determine the amortized cost per operation.
+  \end{fancyquotes}
+
+  Let the potential be the $2\times(i - 2^{\lfloor \lg{i}\rfloor})$.
+
+  For the operation which the cost is $1$, the actual cost is $1$ and
+  the change in potential is $2$. So the amortized cost is $3$.
+
+  For the operation which the cost is $i$, the actual cost is $i$ and
+  the change in potential is:
+
+  \begin{equation}
+    \begin{split}
+      2\times(i - 2^{\lfloor \lg{i}\rfloor}) - 2\times((i-1) -
+      2^{\lfloor \lg{i-1}\rfloor})\\
+      2\times(i - 2^{\lg{i}}) - 2\times((i-1) - 2^{\lg{i}-1})\\
+      2\times(i - i) - 2\times((i-1) - i/2)\\
+      -2\times(i/2-1)\\
+      2-i\\
+    \end{split}
+  \end{equation}
+
+  So the amortized cost is $2$.
+
+  So the amortized for all $i$ operation is $O(1)$.
+\end{enumerate}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 2
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+ (8 points) Design a data strudture that implements the following
+ three operations, with the following amortized running times:
+
+ \begin{itemize}
+ \item Insert(S,x) inserts element $x$ into a set of
+   elements. Required amortized runningtime: O(1)
+ \item DeleteLargerHalf(S) deletes the largest $\lceil
+   \frac{n}{2}\rceil$ elements from the set. Required amortized
+   running time:O(1).
+ \item Print(S) Prints out all elements in the set (in any
+   order). Required amortized running time:O(n).
+ \end{itemize}
+
+ Use the potential method to analyze the running time for each of your operations.
+\end{fancyquotes}
+
+Use a array as the data structure.
+
+When Insert a element, just simply add it to the end of the array with
+actually time cost $O(1)$.
+
+When DeleteLargerHalf the elements, find the median element in $O(n)$.
+Then scan the whole array and insert the element less then median to a
+new array in $O(n)$.
+Finally delete the old array in $O(n)$.
+So the actually cost for DeleteLargerHalf is $O(n)$.
+
+When Print all the elements, just print the array.
+
+Let the potential function is $g(n)=2n$.
+We can get the table as \ref{tab:2}:
+
+\begin{table}[hp]
+  \centering
+  \begin{tabular}[hp]{ccccc}
+    & Actually cost & Potential change & amortized cost & Running time\\
+    \hline
+    Insert & 1 & 2 & 3 & $O(1)$\\
+    DeleteLargerHalf & n & -n & 0 & $O(1)$\\
+  \end{tabular}
+  \caption{Amotized time analysis.}
+  \label{tab:2}
+\end{table}
+
+So the amortized time cost for Insert and DeleteLargerHalf is $O(1)$
+and $O(1)$.
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 3
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (6 points) Consider a data structure that consists of a standard
+  sorted array, which takes time $O(n)$ to insert into and delete
+  from. Create a potential function for this data structure that
+  results in amortized time $O(n)$ for insertion and $O(1)$ for
+  deletion. Prove the amortized running times. Note that you are not
+  supposed to change the operations of insert and delete, just compute
+  amortized running times.
+\end{fancyquotes}
+
+Let $n$ be the number of the elements in the data structure.
+Let the potential be $g(n) = \frac{n^2}{2}$.
+The potential will always be greater than $0$.
+
+\begin{table}[hp]
+  \centering
+  \begin{tabular}[hp]{ccccc}
+    & Actual Cost & Potential Change & Amortized Cost & Running Time\\
+    \hline
+    Insert & $n$ & $n-\frac{1}{2}$  & $2n-\frac{1}{2}$ & $O(n)$\\
+    Delete & $n$ & $-n+\frac{1}{2}$ & $\frac{1}{2}$   & $O(1)$\\
+  \end{tabular}
+\end{table}
+
+\pagebreak
+
+% -----------------------------------------------------------------------------
+% PROBLEM 4
+% -----------------------------------------------------------------------------
+\section{}
+
+\begin{fancyquotes}
+  (8 points) Problem 17-2 Making Binary Search Dynamic
+
+  Binary search of a sorted array takes logarithmic search time, but
+  the time to insert a new element is linear in the size of the
+  array. We can improve the time for insertion by keeping several
+  sorted arrays.
+
+  Specifically, suppose that we wish to support \textsc{SEARCH} and
+  \textsc{INSERT} on a set of $n$ elements. Let $k =
+  \lceil\lg{n}\rceil$, and let the binary representation of $n$ be
+  $<n_{k-1},n_{k-2},\ldots,n_0>$. We have $k$ sorted arrays $A_0,
+  A_1,\ldots, A_{k-1}$, where for $i = 0,1,\ldots,k-1$, the length of
+  array $A_i$ is $2^i$. Each array is either full or empty, depending
+  on whether $n_i = 1$ or $n_i = 0$, respectively. The total number of
+  elements held in all $k$ arrays is therefore $\sum_{i=0}^{k-1}{n_i
+    2^i} = n$. Although each individual array is sorted, elements in
+  different arrays bear no particular relationship to each other.
+\end{fancyquotes}
+
+\begin{enumerate}
+\item
+  \begin{fancyquotes}
+    Describe how to perform the \textsc{SEARCH} operation for this data
+    structure. Analyze its worst-case running time.
+  \end{fancyquotes}
+
+  Enumerate $k$ array, for each array use old binary search algorithm
+  to perform the search in $O(\lg{2^k})=O(k)$ until find. Return not found
+  if all arrays are searched.
+
+  The worst running time:
+
+  \begin{equation}
+    \begin{split}
+      & \sum_{k=1}^{\lg{n}}{k}\\
+      =& \frac{(1+\lg{n})\times\lg{n}}{2}\\
+      =& \frac{\lg^2{n}}{2} + \frac{\lg{n}}{2}
+    \end{split}
+  \end{equation}
+
+  So the worst-case running time is $O(\lg^2{n})$.
+
+\item
+  \begin{fancyquotes}
+    Describe how to perform the \textsc{INSERT} operation. Analyze its
+    worst-case and amortized running times.
+  \end{fancyquotes}
+
+  Create a new array of size $1$ contains the element to insert.
+  Repeat merge two arrays which have the same size $t$ to a new array
+  of size $2t$ by standard merge sort in time cost $2t$, until no
+  arrays to merge.
+
+  In the worst case, all the array will be merged once, so the wost
+  time cost is $O(t^2)=O(\lg^2{n})$.
+
+  Consider the binary representation of $n$.
+  Let $j$ be the first place which $n_j$ is $0$.
+  Then the time cost is $\sum_{i=0}^{j-1}{2\times 2^i} =
+  \sum_{i=1}^{j}{2^i} = 2^{j+1}-2$.
+  For $n$ operations time cost is
+  $\sum_{i=1}^{\lg{n}}{\frac{n}{2^i}\times (2^{i+1}-2)} =
+  2n(\lg{n}-1+\frac{1}{n} = O(n\lg{n})$.
+
+  So the amortized time cost is $O(\lg{n})$.
+
+\item
+  \begin{fancyquotes}
+    Discuss how to implement \textsc{DELETE}.
+  \end{fancyquotes}
+
+  Search the element to delete in $O(\lg^2{n})$.
+  Assume it's in array $A_i$.
+  Break the array without the element to delete into $i-1$ arrays
+  which the sizes are $2^{i-1}, 2^{i-2}, \ldots, 1$.
+  Merge the arrays with the same size until no arrays to merge.
+
+\end{enumerate}
+
+\pagebreak
+
+\end{document}
