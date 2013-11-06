@@ -1,0 +1,11 @@
+digraph "" {
+        rankdir=LR;
+	size="8,5"
+	node[shape=doublecircle] a;
+	node[shape=circle];
+        
+        a->b[label="1", penwidth=3];
+        b->c[label="1", penwidth=3];
+        c->d[label="1", penwidth=3];
+        a->d[label="10"];
+}

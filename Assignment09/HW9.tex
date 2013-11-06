@@ -30,33 +30,31 @@
   path compression is used).
 \end{fancyquotes}
 
-Add two new arrays to show the next and previous element's index in
-the set, to represent the elements in a same set as a two-way circular
-list. In \textsc{UNION}, attach a circular list to another in $O(1)$.
+Add one new array to show the next element's index in the set, to
+represent the elements in a same set as a one-way circular list. In
+\textsc{UNION}, attach a circular list to another in $O(1)$.
 
 \begin{algorithm}[hp]
   \SetKwProg{Fn}{Function}{}{end}
   \Fn{\textsc{init}{(S)}}{
     next = [] * S.size\;
-    prev = [] * S.size\;
     \For{i=1 to S.size}{
       next[i] = i\;
-      prev[i] = i\;
     }
   }
   \Fn{\textsc{UNION}{(S, e1, e2)}}{
-    prev[next[e1]] = prev[e2]\;
-    next[prev[e2]] = next[e1]\;
-    next[e1] = e2\;
-    prev[e2] = e1\;
-    OLD\_UNION(S, e1, e2)\;
+    s1 = FIND(e1)\;
+    s2 = FIND(e2)\;
+    \If{s1 == s2}{return false}
+    S[e1] = e2\;
+    swap(next[e1], next[e2])\;
   }
   \Fn{\textsc{PRINT-SET}{(S, e)}}{
     p = e\;
     print(S[p])\;
     \While{not (next[p] == e)}{
       p = next[p]\;
-      print(S[p])\;
+      print(p)\;
     }
   }
 \end{algorithm}
@@ -98,9 +96,7 @@ list. In \textsc{UNION}, attach a circular list to another in $O(1)$.
     GT = new(Graph)\;
     \For{v in G.V}{
       \For{u in G.V}{
-        \If{not (G.E[v, u] == 0)}{
-          GT.E[u, v] = G.E[v, u]\;
-        }
+        GT.E[u, v] = G.E[v, u]\;
       }
     }
   }
@@ -112,7 +108,7 @@ Time cost for \textsc{REVERSE\_MATRIX} is $O(V^2)$.
 
 \pagebreak
 
-
+% -----------------------------------------------------------------------------
 % PROBLEM 3
 % -----------------------------------------------------------------------------
 \section{}
@@ -158,9 +154,15 @@ components which is not correct.
   $G$, no matter how the vertices are ordered in each adjacency list.
 \end{fancyquotes}
 
-$V=\{a,b,c,d\}$, $s = a$, $E = \{a\rightarrow b=1, b\rightarrow c=1,
-c\rightarrow d=1, a\rightarrow d=10\}$, $E_\pi = \{a\rightarrow b=1,
-b\rightarrow c=1, c\rightarrow d=1\}$
+\begin{figure}[hp]
+  \centering
+  \includegraphics[width=.7\textwidth]{9-4.gv.png}
+  \caption{BFS for shortest path}
+  \label{fig:bsp}
+\end{figure}
+
+$G$ is showed in graph~\ref{fig:bsp}, which the bold edges are in
+$E_{\pi}$.
 
 BFS starts with $a$, after first level search, $b$ and $d$ are both
 marked as searched, and $d$ will never be updated again, no matter the
